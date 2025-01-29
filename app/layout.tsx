@@ -1,3 +1,4 @@
+// Version: 1.0.1 - Force new deploy
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
