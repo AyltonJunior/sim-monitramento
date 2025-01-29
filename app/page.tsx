@@ -113,6 +113,14 @@ export default function Home() {
     return acc
   }, {} as Record<string, number>)
 
+  // Definindo o tipo para os steps
+  type Step = {
+    label: string;
+    done?: boolean;
+    error?: boolean;
+    status?: 'current' | 'pending';
+  }
+
   // Função para obter a mensagem de status detalhada
   const getDetailedStatus = (store: any) => {
     const lastUpdate = new Date(store.timestamp).getTime()
@@ -128,7 +136,7 @@ export default function Home() {
           { label: `Última atualização: ${minutesInactive} minutos atrás`, error: true },
           { label: 'Sistema possivelmente desligado', error: true },
           { label: 'Verificar conexão com a loja', error: true }
-        ],
+        ] as Step[],
         message: 'Sistema Desligado'
       }
     }
@@ -140,9 +148,9 @@ export default function Home() {
           { label: '1. Parando aplicação atual', done: true },
           { label: '2. Verificando processos', done: true },
           { label: '3. Instalando dependências', status: 'current' },
-          { label: '4. Executando build', pending: true },
-          { label: '5. Iniciando aplicação', pending: true }
-        ],
+          { label: '4. Executando build', status: 'pending' },
+          { label: '5. Iniciando aplicação', status: 'pending' }
+        ] as Step[],
         message: 'Reiniciando aplicação...'
       }
     }
@@ -345,12 +353,13 @@ export default function Home() {
                     {getDetailedStatus(selectedStore)?.message}
                   </h3>
                   <div className="space-y-3">
-                    {getDetailedStatus(selectedStore)?.steps.map((step, index) => (
+                    {getDetailedStatus(selectedStore)?.steps.map((step: Step, index: number) => (
                       <div key={index} className="flex items-center space-x-3">
                         <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
                           step.done ? 'bg-green-100 text-green-600' :
                           step.error ? 'bg-red-100 text-red-600' :
                           step.status === 'current' ? 'bg-blue-100 text-blue-600' :
+                          step.status === 'pending' ? 'bg-gray-100 text-gray-400' :
                           'bg-gray-100 text-gray-400'
                         }`}>
                           {step.done && (
@@ -366,7 +375,7 @@ export default function Home() {
                           {step.status === 'current' && (
                             <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
                           )}
-                          {step.pending && (
+                          {step.status === 'pending' && (
                             <div className="w-2 h-2 bg-gray-400 rounded-full" />
                           )}
                         </div>
@@ -374,6 +383,7 @@ export default function Home() {
                           step.done ? 'text-gray-900' :
                           step.error ? 'text-red-600' :
                           step.status === 'current' ? 'text-blue-600 font-medium' :
+                          step.status === 'pending' ? 'text-gray-500' :
                           'text-gray-500'
                         }`}>
                           {step.label}
